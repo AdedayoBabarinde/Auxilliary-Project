@@ -1,0 +1,30 @@
+#!/bin/bash
+# This script creates a new user on the local system.
+
+userfile=/newuser.csv
+username=$(cat /newuser.csv)
+password="Manchester123"
+
+
+# if statement to check if user already exists in the passwd directory
+if [[if -u ${username} &>/dev/null ]] ; then
+echo "${username} already exist and account will not be created"
+else 
+for user in $username
+do
+echo "Creating user account for user '${user}'."
+useradd $user -m -g developers -s /bin/bash
+echo $password | sudo passwd --stdin $user && 
+
+mkdir /home/${user}/.ssh && sudo chown $user /home/${user}/.ssh/ && sudo chmod 700 /home/$user/.ssh/ 
+echo ${{ secrets.id_rsa.pub }} >> /home/${user}/.ssh/id_rsa.pub &&  sudo chown $user /home/${user}/.ssh/id_rsa.pub && sudo chmod 644 /home/${user}/.ssh/id_rsa.pub && 
+cat /home/${user}/.ssh/id_rsa.pub >> /home/${user}/.ssh/authorized_keys && sudo chown $user /home/${user}/.ssh/authorized_keys && sudo chmod 600 /home/${user}/.ssh/authorized_keys
+
+echo ${{ secrets.id_rsa }} >> /home/${user}/.ssh/id_rsa && sudo chown $user /home/$user/.ssh/id_rsa && sudo chmod 600 /home/${user}/.ssh/id_rsa
+
+
+
+done
+
+fi
+
